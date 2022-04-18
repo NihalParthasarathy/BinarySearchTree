@@ -1,4 +1,9 @@
 #include "node.h"
+#include <fstream>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include <iostream>
 #include <cstring>
 
@@ -6,8 +11,12 @@ using namespace std;
 
 void manualAdd(Node* &root);
 void recurciveAdd(Node* curr, int value);
+bool search(Node* curr, int num);
+void display(Node* curr, int depth);
+void addFile(Node* &root);
 
 int main() {
+  srand(time(0));
   cout << "Binary Search Tree" << endl;
   Node* root = NULL;
   bool playing = true;
@@ -16,16 +25,25 @@ int main() {
     char input[10];
     cin >> input;
     if (strcmp(input, "ADD") == 0) {//Calls the add function
-      manualAdd(root);
+      addFile(root);
     }
     else if (strcmp(input, "TYPE") == 0) {//Calls type function
-      
+      manualAdd(root);
     }
     else if (strcmp(input, "DISPLAY") == 0) {//Calls display function
-      
+      display(root, 0);
     }
     else if (strcmp(input, "SEARCH") == 0) {//Calls the print function
-      
+      cout << "What number would you liek to search" << endl;
+      int input2;
+      cin >> input2;
+      bool a = search(root, input2);
+      if (a == true) {
+	cout << "number in tree" << endl;
+      }
+      else {
+	cout << "number not in tree" << endl;
+      }
     }
     else if (strcmp(input, "REMOVE") == 0) {//Calls remove function
       
@@ -49,6 +67,37 @@ void manualAdd(Node* &root) {
   }
 }
 
+void addFile(Node* &root) {//Adds from a file
+  cout << "how many numbers to add" << endl;
+  int input;
+  cin >> input;
+  
+  for (int i = 0; i < input; i++) {
+    char input[10];
+    char tempString[10];
+    int count = 1;
+    int numput;
+    int randomnum = (rand() % 50) + 1;
+    fstream myfile("numberFile.txt");//Opens file
+       
+    while (myfile.getline(input,10, ' ')) {
+      if (count == randomnum) {
+	strcpy(tempString, input);
+	count++;
+      }
+      count++;
+    }
+    numput = atoi(tempString);//Changes from string to int
+    if (root == NULL) {
+      root = new Node(numput);
+      root->parent = NULL;
+    }
+    else if (root != NULL) {
+      recurciveAdd(root, numput);
+    }
+  }
+}
+
 void recurciveAdd(Node* curr, int value) {
   if (curr->data >= value && curr->getLeft() == NULL) {
     curr->setLeft(new Node(value));
@@ -63,5 +112,37 @@ void recurciveAdd(Node* curr, int value) {
   }
   else if (curr->data < value) {
     recurciveAdd(curr->getRight(), value);
+  }
+}
+
+bool search(Node* curr, int num) {
+  bool b = false;
+  if (curr->data == num) {
+    return true;
+  }
+  else {
+    if (curr->data > num && curr->getLeft() != NULL) {
+      b = search(curr->getLeft(), num);
+    }
+    else if (curr->data < num && curr->getRight() != NULL) {
+      b = search(curr->getRight(), num);
+    }
+    if(b) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void display(Node* curr, int depth) {//Displays the heap using tabs
+  if (curr->right != NULL) {
+    display(curr->right, depth + 1);//Recurcive call
+  }
+  for (int i = 0; i < depth; i++) {//Prints out the amount of tabs based on the depth
+    cout << "\t";
+  }
+  cout << curr->data << endl;//Prints out the number
+  if (curr->left != NULL) {
+    display(curr->left, depth + 1);//Recurcive call
   }
 }
