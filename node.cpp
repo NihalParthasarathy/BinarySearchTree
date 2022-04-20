@@ -9,6 +9,8 @@ Node::Node(int newdata) {
   data = newdata;
 }
 
+
+
 void Node::setRight(Node* newright) {
   right = newright;
 }

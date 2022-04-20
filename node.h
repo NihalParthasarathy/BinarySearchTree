@@ -9,7 +9,7 @@ class Node {
   Node* parent;
   int data;
   Node(int newdata);
-  ~Node();
+  //~Node();
   void setLeft(Node* newleft);
   void setRight(Node* newright);
   Node* getLeft();

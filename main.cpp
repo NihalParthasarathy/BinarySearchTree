@@ -11,15 +11,17 @@ using namespace std;
 
 void manualAdd(Node* &root);
 void recurciveAdd(Node* curr, int value);
-bool search(Node* curr, int num);
+bool search(Node* curr, int num, Node* &newptr);
 void display(Node* curr, int depth);
 void addFile(Node* &root);
+void remove(Node* root, int num, Node* newptr);
 
 int main() {
   srand(time(0));
   cout << "Binary Search Tree" << endl;
   Node* root = NULL;
   bool playing = true;
+  Node* newptr = NULL;
   while (playing == true) {//While loop
     cout << "would you like to add from a file(ADD), Manualy add(TYPE), search(SEARCH), display(DISPLAY), remove from heap(REMOVE), or quit(QUIT)" << endl;
     char input[10];
@@ -37,7 +39,7 @@ int main() {
       cout << "What number would you liek to search" << endl;
       int input2;
       cin >> input2;
-      bool a = search(root, input2);
+      bool a = search(root, input2, newptr);
       if (a == true) {
 	cout << "number in tree" << endl;
       }
@@ -46,7 +48,10 @@ int main() {
       }
     }
     else if (strcmp(input, "REMOVE") == 0) {//Calls remove function
-      
+      cout << "what number would you like to remove" << endl;
+      int input3;
+      cin >> input3;
+      remove(root, input3, newptr);
     }
     else if (strcmp(input, "QUIT") == 0) {//Returns false
       playing = false;//Exits while Loop stopping game
@@ -115,17 +120,18 @@ void recurciveAdd(Node* curr, int value) {
   }
 }
 
-bool search(Node* curr, int num) {
+bool search(Node* curr, int num, Node* &newptr) {
   bool b = false;
   if (curr->data == num) {
+    newptr = curr;
     return true;
   }
   else {
     if (curr->data > num && curr->getLeft() != NULL) {
-      b = search(curr->getLeft(), num);
+      b = search(curr->getLeft(), num, newptr);
     }
     else if (curr->data < num && curr->getRight() != NULL) {
-      b = search(curr->getRight(), num);
+      b = search(curr->getRight(), num, newptr);
     }
     if(b) {
       return true;
@@ -146,3 +152,47 @@ void display(Node* curr, int depth) {//Displays the heap using tabs
     display(curr->left, depth + 1);//Recurcive call
   }
 }
+
+void remove(Node* curr, int num, Node* newptr) {
+  if (search(curr, num, newptr) == true) {
+    Node* temp = newptr;
+    cout << temp->data << endl;
+    if (temp->getLeft() == NULL && temp->getRight() == NULL) {
+      if (temp->parent->getLeft() == temp) {
+	temp->parent->left = NULL;
+	delete temp;
+	cout << "here" << endl;
+      }
+      else {
+	temp->parent->right = NULL;
+	delete temp;
+      }
+      newptr = NULL;
+    }
+    else if (temp->getLeft() != NULL && temp->getRight() == NULL) {
+      //MAKE THE PARENTS POINTER POINT TO THE CHILD (EASIER)
+      cout << "where" << endl;
+      Node* tempParent = temp->parent;
+      while (temp->getLeft() != NULL) {
+	Node* temptemp = temp;
+	temp = temp->getLeft();
+	delete temptemp;
+      }
+      tempParent->left = temp;
+      newptr = NULL;
+    }
+    else if (temp->getLeft() == NULL && temp->getRight() != NULL) {
+      cout << "there" << endl;
+      Node* tempParent = temp->parent;
+      while (temp->getRight() != NULL) {
+	Node* temptemp = temp;
+        temp = temp->getRight();
+	delete temptemp;
+      }
+      tempParent->right = temp;
+      newptr = NULL;
+    }
+
+  }
+}
+
