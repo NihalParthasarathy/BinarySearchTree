@@ -3,29 +3,27 @@
 
 using namespace std;
 
-Node::Node(int newdata) {
+Node::Node(int newdata) {//Constructer
   left = NULL;
   right = NULL;
   data = newdata;
 }
 
-
-
-void Node::setRight(Node* newright) {
+void Node::setRight(Node* newright) {//Sets the right
   right = newright;
 }
-void Node::setLeft(Node* newleft) {
+void Node::setLeft(Node* newleft) {//Sets the left
   left = newleft;
 }
-Node* Node::getLeft() {
+Node* Node::getLeft() {//Returns left
   return left;
 }
-Node* Node::getRight() {
+Node* Node::getRight() {//Returns right
   return right;
 }
-Node* Node::getParent() {
+Node* Node::getParent() {//Return parent
   return parent;
 }
-int Node::getData() {
+int Node::getData() {//Returns data
   return data;
 }

@@ -1,3 +1,8 @@
+//Nihal Parthasrathy
+//4/20/2022
+//This program uses a binary tree to sort numbers and is able to add them, search for numbers, display the tree, and remove numbers
+
+//Inclusions
 #include "node.h"
 #include <fstream>
 #include <math.h>
@@ -9,23 +14,28 @@
 
 using namespace std;
 
+//Function prototypes
 void manualAdd(Node* &root);
 void recurciveAdd(Node* curr, int value);
 bool search(Node* curr, int num, Node* &newptr);
 void display(Node* curr, int depth);
 void addFile(Node* &root);
-void remove(Node* root, int num, Node* newptr);
+void remove(Node* &root, Node* curr, int num, Node* newptr);
 
 int main() {
   srand(time(0));
   cout << "Binary Search Tree" << endl;
+  
   Node* root = NULL;
   bool playing = true;
   Node* newptr = NULL;
+  
   while (playing == true) {//While loop
+    
     cout << "would you like to add from a file(ADD), Manualy add(TYPE), search(SEARCH), display(DISPLAY), remove from heap(REMOVE), or quit(QUIT)" << endl;
     char input[10];
     cin >> input;
+    
     if (strcmp(input, "ADD") == 0) {//Calls the add function
       addFile(root);
     }
@@ -35,7 +45,7 @@ int main() {
     else if (strcmp(input, "DISPLAY") == 0) {//Calls display function
       display(root, 0);
     }
-    else if (strcmp(input, "SEARCH") == 0) {//Calls the print function
+    else if (strcmp(input, "SEARCH") == 0) {//Calls the search function and asks for what you want to search
       cout << "What number would you liek to search" << endl;
       int input2;
       cin >> input2;
@@ -47,11 +57,11 @@ int main() {
 	cout << "number not in tree" << endl;
       }
     }
-    else if (strcmp(input, "REMOVE") == 0) {//Calls remove function
+    else if (strcmp(input, "REMOVE") == 0) {//Calls remove function and asks what you want to remove
       cout << "what number would you like to remove" << endl;
       int input3;
       cin >> input3;
-      remove(root, input3, newptr);
+      remove(root, root, input3, newptr);
     }
     else if (strcmp(input, "QUIT") == 0) {//Returns false
       playing = false;//Exits while Loop stopping game
@@ -59,15 +69,15 @@ int main() {
   }
 }
 
-void manualAdd(Node* &root) {
+void manualAdd(Node* &root) {//Adds the number manually to the tree
   cout << "enter a number between 1-999" << endl;
   int num;
   cin >> num;
-  if (root == NULL) {
+  if (root == NULL) {//If there is nothing in the list
     root = new Node(num);
     root->parent = NULL;
   }
-  else if (root != NULL) {
+  else if (root != NULL) {//If list has something
     recurciveAdd(root, num);
   }
 }
@@ -93,44 +103,45 @@ void addFile(Node* &root) {//Adds from a file
       count++;
     }
     numput = atoi(tempString);//Changes from string to int
-    if (root == NULL) {
+    
+    if (root == NULL) {//If the tree has nothing
       root = new Node(numput);
       root->parent = NULL;
     }
-    else if (root != NULL) {
+    else if (root != NULL) {//If there is something in the tree
       recurciveAdd(root, numput);
     }
   }
 }
 
-void recurciveAdd(Node* curr, int value) {
-  if (curr->data >= value && curr->getLeft() == NULL) {
+void recurciveAdd(Node* curr, int value) {//Recurcivly adds the numbers to the tree
+  if (curr->data >= value && curr->getLeft() == NULL) {//If curr is greater than value and its left is empty
     curr->setLeft(new Node(value));
     curr->getLeft()->parent = curr;
   }
-  else if (curr->data < value && curr->getRight() == NULL) {
+  else if (curr->data < value && curr->getRight() == NULL) {//If curr is less than value and its right is empty
     curr->setRight(new Node(value));
     curr->getRight()->parent = curr;
   }
-  else if (curr->data >= value) {
+  else if (curr->data >= value) {//If curr's data is greater than the value still
     recurciveAdd(curr->getLeft(), value);
   }
-  else if (curr->data < value) {
+  else if (curr->data < value) {//IF curr's data is less than the value still
     recurciveAdd(curr->getRight(), value);
   }
 }
 
-bool search(Node* curr, int num, Node* &newptr) {
+bool search(Node* curr, int num, Node* &newptr) {//Looks for the number in the tree and returns true or false based on if it can find it or not
   bool b = false;
-  if (curr->data == num) {
+  if (curr->data == num) {//Base case
     newptr = curr;
     return true;
   }
   else {
-    if (curr->data > num && curr->getLeft() != NULL) {
+    if (curr->data > num && curr->getLeft() != NULL) {//Traverses the binary tree if curr data is still more than the target num and there is still a left
       b = search(curr->getLeft(), num, newptr);
     }
-    else if (curr->data < num && curr->getRight() != NULL) {
+    else if (curr->data < num && curr->getRight() != NULL) {//Traverses the binary tree if curr data is still less than target num and there is a right
       b = search(curr->getRight(), num, newptr);
     }
     if(b) {
@@ -140,7 +151,7 @@ bool search(Node* curr, int num, Node* &newptr) {
   return false;
 }
 
-void display(Node* curr, int depth) {//Displays the heap using tabs
+void display(Node* curr, int depth) {//Displays the binary search tree using tabs
   if (curr->right != NULL) {
     display(curr->right, depth + 1);//Recurcive call
   }
@@ -153,46 +164,84 @@ void display(Node* curr, int depth) {//Displays the heap using tabs
   }
 }
 
-void remove(Node* curr, int num, Node* newptr) {
-  if (search(curr, num, newptr) == true) {
+void remove(Node* &root, Node* curr, int num, Node* newptr) {//Removes the number from the binary search tree
+  if (search(curr, num, newptr) == true) {//If the number is in the tree
     Node* temp = newptr;
-    cout << temp->data << endl;
-    if (temp->getLeft() == NULL && temp->getRight() == NULL) {
-      if (temp->parent->getLeft() == temp) {
-	temp->parent->left = NULL;
+    if (temp == root) {//If thr root is the number to be deleted
+      if (temp->getLeft() == NULL && temp->getRight() == NULL) {//If it is a leaf
+	root = NULL;
+	newptr = NULL;
+      }
+      else if (temp->getLeft() != NULL && temp->getRight() == NULL) {//If it only has a left child
+	root = root->getLeft();
+	newptr = NULL;
+      }
+      else if (temp->getLeft() == NULL && temp->getRight() != NULL) {//If it only has a right child
+	root = root->getRight();
+	newptr = NULL;
+      }
+      else {//If it has two children
+	Node* newNode = temp->right;
+        while (newNode->left != NULL) {
+          newNode = newNode->left;
+        }
+        temp->data = newNode->data;
+        if (newNode == temp->getRight()) {
+          temp->right = temp->right->right;
+        }
+	newptr = NULL;
+      }
+    }
+    else {
+      if (temp->getLeft() == NULL && temp->getRight() == NULL) {//If the it is a leaf
+	if (temp->parent->getLeft() == temp) {//If temp is a left child of its parents delete it and make its parents left point to null
+	  temp->parent->left = NULL;
+	  delete temp;
+	}
+	else {//If right child
+	  temp->parent->right = NULL;
+	  delete temp;
+	}
+	newptr = NULL;
+      }
+      else if (temp->getLeft() != NULL && temp->getRight() == NULL) {//If temp only has a left child
+	//MAKEs THE PARENTS POINTER POINT TO THE CHILD (EASIER)
+	Node* tempParent = temp->parent;
+	if (tempParent->getLeft() == temp) {//If it is a left child
+	  tempParent->left = temp->getLeft();
+	  temp->getLeft()->parent = tempParent;
+	}
+	else {//If it is a right child
+	  tempParent->right = temp->getLeft();
+	  temp->getLeft()->parent = tempParent;
+	}
+	delete temp;//Deletes temp
+	newptr = NULL;
+      }
+      else if (temp->getLeft() == NULL && temp->getRight() != NULL) {//If temp only has a right child
+	Node* tempParent = temp->parent;
+	if (tempParent->getLeft() == temp) {//If it is a right child
+	  tempParent->left = temp->getRight();
+	  temp->getRight()->parent = tempParent;
+	}
+	else {//If it is a right child
+        tempParent->right = temp->getRight();
+        temp->getRight()->parent = tempParent;
+      }
 	delete temp;
-	cout << "here" << endl;
+	newptr = NULL;
       }
-      else {
-	temp->parent->right = NULL;
-	delete temp;
+      else {//If it has two children
+	Node* newNode = temp->right;
+	while (newNode->left != NULL) {
+	  newNode = newNode->left;
+	}
+	temp->data = newNode->data;
+	if (newNode == temp->getRight()) {
+	  temp->right = temp->right->right;
+	}
       }
-      newptr = NULL;
     }
-    else if (temp->getLeft() != NULL && temp->getRight() == NULL) {
-      //MAKE THE PARENTS POINTER POINT TO THE CHILD (EASIER)
-      cout << "where" << endl;
-      Node* tempParent = temp->parent;
-      while (temp->getLeft() != NULL) {
-	Node* temptemp = temp;
-	temp = temp->getLeft();
-	delete temptemp;
-      }
-      tempParent->left = temp;
-      newptr = NULL;
-    }
-    else if (temp->getLeft() == NULL && temp->getRight() != NULL) {
-      cout << "there" << endl;
-      Node* tempParent = temp->parent;
-      while (temp->getRight() != NULL) {
-	Node* temptemp = temp;
-        temp = temp->getRight();
-	delete temptemp;
-      }
-      tempParent->right = temp;
-      newptr = NULL;
-    }
-
   }
 }
 
